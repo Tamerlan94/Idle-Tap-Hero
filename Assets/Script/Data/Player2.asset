@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b86ce719d1b7ab43a048caac1dac3bc, type: 3}
+  m_Name: Player2
+  m_EditorClassIdentifier: 
+  id: 1
+  animator: {fileID: 22100000, guid: a248192c31c1bb147915877d5f2408f8, type: 2}
+  icon: {fileID: 21300000, guid: c074a0e4f56d64d4ab6625058f55bb13, type: 3}
+  cost: 500
