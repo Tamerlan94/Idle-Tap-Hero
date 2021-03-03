@@ -12,7 +12,7 @@ namespace PunchHero
 
         public int health;
         private int currentHealth;
-        public float movementSpeed;
+        private float movementSpeed;
         public float attackRange;
 
         public AudioClip hittedSound;
@@ -35,6 +35,8 @@ namespace PunchHero
             isStartedGame = true;
             //временно
             animator.SetBool("isWalk", true);
+
+            movementSpeed = EnemySpawner.SetSpeed();
         }
         private void FixedUpdate()
         {
@@ -59,7 +61,7 @@ namespace PunchHero
             }
             //health = Random.Range(1, 4);
             currentHealth = health;
-            movementSpeed = Random.Range(1, 8);
+            movementSpeed = EnemySpawner.SetSpeed();
         }
 
         private void Move()
@@ -118,11 +120,15 @@ namespace PunchHero
         }
         public void AnimationHit()
         {
-            playerTransform.GetComponent<PlayerController>().TakeDamage();
-            SoundManager.SharedInstance.PlaySfx(attackSound);
+            if (isStartedGame)
+            {
+                SoundManager.SharedInstance.PlaySfx(attackSound);
+                playerTransform.GetComponent<PlayerController>().TakeDamage();
+            }
+
         }
 
-        public void RetryGame()
+        public void RetryGame(bool t)
         {
             isStartedGame = true;
         }

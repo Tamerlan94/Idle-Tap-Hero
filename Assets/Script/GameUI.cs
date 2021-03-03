@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.Events;
+using GooglePlayGames;
+using UnityEngine.SocialPlatforms;
+using GooglePlayGames.BasicApi;
 
 namespace PunchHero
 {
@@ -16,7 +19,7 @@ namespace PunchHero
         public RectTransform pauseButtonUI;
         public RectTransform pauseUI;
 
-        public static event UnityAction OnRetryGame;
+        public static event UnityAction<bool> OnRetryGame;
         public static event UnityAction<bool> OnStartEndGame;
 
         //carousale
@@ -28,14 +31,26 @@ namespace PunchHero
         private float rectWidth;
         private float rectHeight;
 
+        public Button adsButton;
+        public Button leaderboardMenu;
+
         public Button startGame;
         public Button retryGame;
         public Button backToMenu;
         public Button pauseGame;
         public Button unPauseGame;
+        public Button exitGame;
+        public Button gpsExit;
 
         private void Start()
         {
+            PlayGamesPlatform.Activate();
+            Social.localUser.Authenticate((bool ok) =>
+            {
+                if (ok) Debug.Log("success");
+                else Debug.Log("not success");
+            });
+
             rectWidth = rectTransforms[0].rect.width;
             rectHeight = rectTransforms[0].rect.height;
 
@@ -43,18 +58,41 @@ namespace PunchHero
 
             foreach (Button item in backButtons)
             {
-                item.onClick.AddListener(BackStepMenu);
+                item.onClick.AddListener(NextStepMenu);
             }
             foreach (Button item in forwardButtons)
             {
-                item.onClick.AddListener(NextStepMenu);
+                item.onClick.AddListener(BackStepMenu);
             }
 
             startGame.onClick.AddListener(() => StartEndGame(true));
-            retryGame.onClick.AddListener(RetryGame);
+            retryGame.onClick.AddListener(() => RetryGame(true));
             backToMenu.onClick.AddListener(BackToMenu);
             pauseGame.onClick.AddListener(() => PauseGame(true));
             unPauseGame.onClick.AddListener(() => PauseGame(false));
+            adsButton.onClick.AddListener(() => RetryGame(false));
+            leaderboardMenu.onClick.AddListener(ShowLeaderboard);
+            exitGame.onClick.AddListener(ExitGame);
+            gpsExit.onClick.AddListener(GpsExit);
+        }
+
+        private void GpsExit()
+        {
+            PlayGamesPlatform.Instance.Authenticate(SignInInteractivity.CanPromptAlways, (result) =>
+            {
+                // handle results
+            });
+            //PlayGamesPlatform.Instance.SignOut();
+
+        }
+        private void ExitGame()
+        {
+            Application.Quit();
+        }
+    
+        private void ShowLeaderboard()
+        {
+            Social.ShowLeaderboardUI();
         }
 
         private void ShowEndMenu(bool t)
@@ -117,16 +155,16 @@ namespace PunchHero
             if (b)
             {
                 Time.timeScale = 0;
-                pauseUI.DOAnchorPosY(0f, 0.5f);
-                scoreUI.DOAnchorPosX(-150f, 0.5f);
-                pauseButtonUI.DOAnchorPosX(150f, 0.5f);                
+                pauseUI.DOAnchorPosY(0f, 0.5f).SetUpdate(true);
+                scoreUI.DOAnchorPosX(-150f, 0.5f).SetUpdate(true);
+                pauseButtonUI.DOAnchorPosX(150f, 0.5f).SetUpdate(true);                
             }
             else
             {
                 Time.timeScale = 1;
-                pauseUI.DOAnchorPosY(rectHeight, 0.5f);
-                scoreUI.DOAnchorPosX(150f, 0.5f);
-                pauseButtonUI.DOAnchorPosX(-20f, 0.5f);
+                pauseUI.DOAnchorPosY(rectHeight, 0.5f).SetUpdate(true);
+                scoreUI.DOAnchorPosX(150f, 0.5f).SetUpdate(true);
+                pauseButtonUI.DOAnchorPosX(-20f, 0.5f).SetUpdate(true);
             }
            
         }
@@ -136,7 +174,7 @@ namespace PunchHero
             Time.timeScale = 1;
             if (b)
             {
-                RetryGame();
+                RetryGame(true);
                 PauseGame(false);
             }
             else
@@ -159,7 +197,7 @@ namespace PunchHero
             scoreUI.DOAnchorPosX(-150f, 0.5f);
             pauseButtonUI.DOAnchorPosX(150f, 0.5f);
 
-            ObjectPooler.SharedInstance.DisablePooledObject();
+            
         }
         public void StartEndGame(bool t)
         {
@@ -170,12 +208,12 @@ namespace PunchHero
             }
             OnStartEndGame?.Invoke(t);
         }
-        public void RetryGame()
+        public void RetryGame(bool t)
         {
             endMenuUI.DOAnchorPosY(rectHeight, 0.5f);
             scoreUI.DOAnchorPosX(150f, 0.5f);
             pauseButtonUI.DOAnchorPosX(-20f, 0.5f);
-            OnRetryGame?.Invoke();
+            OnRetryGame?.Invoke(t);
         }
         public static void EndGame()
         {

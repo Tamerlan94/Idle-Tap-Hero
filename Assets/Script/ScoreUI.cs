@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using GooglePlayGames;
+using UnityEngine.SocialPlatforms;
 
 namespace PunchHero
 {
@@ -27,7 +29,7 @@ namespace PunchHero
 
             scoreTextEndPause.text = score.ToString();
             bestScoreTextPause.text = bestScore.ToString();
-        }
+        }               
 
         private void AddScore()
         {
@@ -47,12 +49,16 @@ namespace PunchHero
             }
         }
 
-        public void RetryGame()
+        public void RetryGame(bool t)
         {
-            score = 0;
-            scoreText.text = score.ToString("0000");
-            scoreTextEnd.text = score.ToString();
-            scoreTextEndPause.text = score.ToString();
+            if (t)
+            {
+                score = 0;
+                scoreText.text = score.ToString("0000");
+                scoreTextEnd.text = score.ToString();
+                scoreTextEndPause.text = score.ToString();
+            }
+            
         }
 
         public void StartEndGame(bool t)
@@ -63,6 +69,18 @@ namespace PunchHero
                 scoreText.text = score.ToString("0000");
                 scoreTextEnd.text = score.ToString();
                 scoreTextEndPause.text = score.ToString();
+            }
+            else
+            {
+                if (score >= bestScore)
+                {
+                    Social.ReportScore(bestScore, GPGSIds.leaderboard_best_score, (bool success) =>
+                    {
+                        // handle success or failure
+                        if (success) PlayerPrefs.SetInt("bestScore", bestScore);
+                        else Debug.Log("not success");
+                    });
+                }                
             }
            
         }

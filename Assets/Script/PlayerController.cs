@@ -131,7 +131,7 @@ namespace PunchHero
             Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
         }
 
-        public void RetryGame()
+        public void RetryGame(bool t)
         {
             health = 3;
             animator.SetBool("isDie", false);

@@ -6,6 +6,6 @@ namespace PunchHero
 {
     public interface IRetryGame
     {
-        public void RetryGame();
+        public void RetryGame(bool t);
     }
 }

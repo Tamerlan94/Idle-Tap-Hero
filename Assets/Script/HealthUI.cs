@@ -48,7 +48,7 @@ namespace PunchHero
                 canvasGroup.DOFade(0f, 1f);
         }
 
-        public void RetryGame()
+        public void RetryGame(bool t)
         {
             canvasGroup.DOFade(1f, 1f);
             for (int i = 0; i < health.Length; i++)

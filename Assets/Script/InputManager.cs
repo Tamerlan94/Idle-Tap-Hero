@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.EnhancedTouch;
+//using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.Events;
 
 namespace PunchHero
@@ -13,11 +13,11 @@ namespace PunchHero
         public static InputManager Instance;
         public event UnityAction<Vector2> OnTouchPressed;
 
-        //private TouchControl touchControl;
+        private TouchControl touchControl;
 
         private void Awake()
         {
-            //touchControl = new TouchControl();
+            touchControl = new TouchControl();
             
 
             if (Instance == null)
@@ -32,31 +32,31 @@ namespace PunchHero
         }
         private void OnEnable()
         {
-            //touchControl.Enable();
+            touchControl.Enable();
 
-            EnhancedTouchSupport.Enable();
+            //EnhancedTouchSupport.Enable();
         }
         private void OnDisable()
         {
-            //touchControl.Disable();
+            touchControl.Disable();
 
-            EnhancedTouchSupport.Disable();
+            //EnhancedTouchSupport.Disable();
         }
         private void Start()
         {
-            //touchControl.Touch.TouchPress.started += ctx => TouchInput_started(ctx);
-            UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown += FingerDown;
+            touchControl.Touch.TouchPress.started += ctx => TouchInput_started(ctx);
+            //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown += FingerDown;
         }
 
         private void TouchInput_started(InputAction.CallbackContext context)
         {
-            //Debug.Log("position: " + touchControl.Touch.TouchPosition.ReadValue<Vector2>());
-            //OnTouchPressed?.Invoke(touchControl.Touch.TouchPosition.ReadValue<Vector2>());
+            //Debug.Log("position: " + touchControl.Touch.TouchPosition.ReadValue<Vector2>());  
 
+            OnTouchPressed?.Invoke(touchControl.Touch.TouchPosition.ReadValue<Vector2>());
         }
-        private void FingerDown(Finger finger)
-        {
-            OnTouchPressed?.Invoke(finger.screenPosition);
-        }
+        //private void FingerDown(Finger finger)
+        //{
+        //    OnTouchPressed?.Invoke(finger.screenPosition);
+        //}
     }
 }

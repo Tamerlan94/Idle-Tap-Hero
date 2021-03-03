@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
 
 namespace PunchHero
 {
@@ -19,22 +21,40 @@ namespace PunchHero
 
         private bool isGameStarted;
         private float timer = 0f;
-        private float timerEnd = 3f;
+        private float timerEnd = 5f;
 
-        private int levelMiltiply = 15;
+        private int levelMiltiply = 7;
         private int spawnNumber = 0;
+        private int levelNumber = 1;
+        private static float enemySpeed = 3f;
+
+        public CanvasGroup levelObj;
+        public Text levelText;
 
         private void Start()
         {
             GameUI.OnStartEndGame += StartEndGame;
             GameUI.OnRetryGame += RetryGame;
+
+            levelText.text = levelNumber.ToString();
         }
 
         public void StartEndGame(bool t)
         {
             isGameStarted = t;
+            FadeCanvas(t);
         }
-
+        private void FadeCanvas(bool t)
+        {
+            if (!t)
+            {
+                levelObj.DOFade(0f, 1f);
+            }
+            else
+            {
+                levelObj.DOFade(1f, 1f);
+            }
+        }
         private void Update()
         {
             if (isGameStarted)
@@ -85,20 +105,42 @@ namespace PunchHero
             //уровень сложности
             spawnNumber++;
             if (spawnNumber > levelMiltiply)
-            {
-                timerEnd = Random.Range(1, 5);
-                levelMiltiply = Random.Range(5, 21);
+            {                
+                if (timerEnd > 1)
+                {
+                    timerEnd -= 0.5f;
+                    enemySpeed++;
+                }
+
+                levelText.text = (++levelNumber).ToString();
                 spawnNumber = 0;
             }
         }
-
-        public void RetryGame()
+        public static float SetSpeed()
         {
-            timerEnd = 3f;
-            levelMiltiply = 15;
-            spawnNumber = 0;
-            isGameStarted = true;
-            ObjectPooler.SharedInstance.DisablePooledObject();
+            return enemySpeed;
+        }
+
+        public void RetryGame(bool t)
+        {
+            if (t)
+            {
+                timerEnd = 5f;
+                levelNumber = 1;
+                enemySpeed = 3f;
+                levelText.text = levelNumber.ToString();
+                spawnNumber = 0;
+                isGameStarted = true;
+                levelObj.DOFade(1f, 1f);
+                ObjectPooler.SharedInstance.DisablePooledObject();
+            }
+            else
+            {
+                //second chance
+                isGameStarted = true;
+                levelObj.DOFade(1f, 1f);
+                ObjectPooler.SharedInstance.DisablePooledObject();
+            }
         }
     }
 }
